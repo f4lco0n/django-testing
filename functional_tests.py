@@ -34,7 +34,9 @@ class NewVisitorTest(unittest.TestCase):
 
         #compare text from inputbox to updated table
         self.assertTrue(
-            any(row.text == '1: Kupić pióra' for row in rows))
+            any(row.text == '1: Kupić pióra' for row in rows),
+            "Nowy element nie znajduje sie w tabeli."
+        )
 
         self.fail('Zakonczenie testu')
 
