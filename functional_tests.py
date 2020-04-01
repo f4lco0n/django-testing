@@ -37,6 +37,13 @@ class NewVisitorTest(unittest.TestCase):
         inputbox.send_keys(Keys.ENTER)
 
         self.check_for_row_in_list_table('1: Kupić pióra')
+
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Uzyc pior')
+        inputbox.send_keys(Keys.ENTER)
+
+        self.check_for_row_in_list_table('2: Uzyc pior')
+
         # self.fail('Zakonczenie testu')
 
 if __name__=='__main__':
