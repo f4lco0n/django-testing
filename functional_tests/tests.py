@@ -36,7 +36,8 @@ class NewVisitorTest(LiveServerTestCase):
         #hardcode given text
         inputbox.send_keys('Kupić pióra')
         inputbox.send_keys(Keys.ENTER)
-
+        user1_list_url = self.browser.current_url
+        self.assertRegex(user1_list_url,'/lists/.+')
         self.check_for_row_in_list_table('1: Kupić pióra')
 
         inputbox = self.browser.find_element_by_id('id_new_item')
@@ -44,11 +45,31 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox.send_keys(Keys.ENTER)
 
         self.check_for_row_in_list_table('2: Uzyc pior')
+        self.check_for_row_in_list_table('1: Kupić pióra')
 
-        self.fail('Zakonczenie testu')
+        #new user visits website
 
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
 
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Kupić pióra',page_text)
+        self.assertNotIn('uzyc pior',page_text)
 
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        inputbox.send_keys('Kupić mleko')
+        inputbox.send_keys(Keys.ENTER)
+
+        #unique url for second user
+        user2_list_url = self.browser.current_url
+        self.assertRegex(user2_list_url,'/lists/.+')
+        self.assertNotEqual(user2_list_url,user1_list_url)
+
+        #check if there is something after user1
+        page_text = self.browser.find_element_by_tag_name('body').text
+        self.assertNotIn('Kupić pióra',page_text)
+        self.assertIn('Kupić mleko',page_text)
 
 
 
