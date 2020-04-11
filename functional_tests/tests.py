@@ -73,4 +73,3 @@ class NewVisitorTest(LiveServerTestCase):
 
 
 
-
