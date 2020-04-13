@@ -80,3 +80,21 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'item2')
 
 
+class NewListTest(TestCase):
+
+    def test_saving_a_POST_request(self):
+        self.client.post(
+            '/lists/new',
+            data={'item_text': 'Nowy element listy'}
+        )
+        self.assertEqual(Item.objects.count(),1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text,'Nowy element listy')
+
+    def test_redirects_after_POST(self):
+        response = self.client.post(
+            '/lists/new',
+            data={'item_text': 'Nowy element listy'}
+        )
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(response['location'],'/lists/the-only-list-in-the-world/')
