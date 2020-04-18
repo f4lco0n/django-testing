@@ -53,19 +53,28 @@ class ListAndItemModelTest(TestCase):
 class ListViewTest(TestCase):
 
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        list_ = List.objects.create()
+        response = self.client.get('/lists/%d/' % (list_.id,))
         self.assertTemplateUsed(response,'list.html')
 
-    def test_displays_all_items(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='item1',list=list_)
-        Item.objects.create(text='item2',list=list_)
 
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+
+
+    def test_displays_only_items_for_that_list(self):
+        correct_list = List.objects.create()
+        Item.objects.create(text='item1',list=correct_list)
+        Item.objects.create(text='item2',list=correct_list)
+        other_list = List.objects.create()
+        Item.objects.create(text='item 1 for other_list',list=other_list)
+        Item.objects.create(text='item 2 for other list',list=other_list)
+
+
+        response = self.client.get('/lists/%d/' % (correct_list.id,))
 
         self.assertContains(response, 'item1')
         self.assertContains(response, 'item2')
-
+        self.assertNotContains(response, 'item 1 for other_list')
+        self.assertNotContains(response, 'item 2 for other_list')
 
 class NewListTest(TestCase):
 
@@ -83,5 +92,6 @@ class NewListTest(TestCase):
             '/lists/new',
             data={'item_text': 'Nowy element listy'}
         )
-        self.assertRedirects(response,'/lists/the-only-list-in-the-world/')
+        new_list = List.objects.first()
+        self.assertRedirects(response,'/lists/%d/' % (new_list.id,))
 
